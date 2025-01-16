@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import styles from "./app.module.css";
 
 export const App = () => {
@@ -9,6 +9,8 @@ export const App = () => {
 	const [passwordError, setPasswordError] = useState(null);
 	const [confirmPassword, setConfirmPassword] = useState("");
 	const [confirmPasswordError, setConfirmPasswordError] = useState(null);
+
+	const submitButtonRef = useRef(null);
 
 	const onEmailChange = ({ target }) => {
 		setEmail(target.value);
@@ -74,6 +76,8 @@ export const App = () => {
 		}
 		if (password !== confirmPassword) {
 			setConfirmPasswordError("Пароли не совпадают.");
+		} else {
+			submitButtonRef.current.focus();
 		}
 	};
 
@@ -142,6 +146,7 @@ export const App = () => {
 				/>
 
 				<button
+					ref={submitButtonRef}
 					type="submit"
 					className={styles.formButton}
 					disabled={
