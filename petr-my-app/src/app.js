@@ -1,5 +1,50 @@
-import { useState } from "react";
+import * as yup from "yup";
+import { useState, useRef } from "react";
 import styles from "./app.module.css";
+
+const emailChangeScheme = yup
+	.string()
+	.matches(
+		/^[\w_@.]*$/,
+		"Неверный E-mail. Допустимые символы - буквы, цифры, нижнее подчеркивание, @ и точка."
+	)
+	.max(20, "Неверный E-mail. Должно быть не более 20 символов.");
+
+const passwordChangeScheme = yup
+	.string()
+	.matches(
+		/^[\w_]*$/,
+		"Неверный пароль. Доступные символы - буквы, цифры и нижнее подчеркивание."
+	)
+	.max(15, "Неверный пароль. Должно быть не более 15 символов.");
+
+const passwordBlurScheme = yup
+	.string()
+	.min(3, "Неверный пароль. Пароль должен быть не меньше 3-х символов.");
+
+const confirmPasswordChangeScheme = yup
+	.string()
+	.matches(
+		/^[\w_]*$/,
+		"Неверный пароль. Доступные символы - буквы, цифры и нижнее подчеркивание."
+	)
+	.max(15, "Неверный пароль. Должно быть не более 15 символов.");
+
+const confirmPasswordBlurScheme = yup
+	.string()
+	.min(3, "Неверный пароль. Пароль должен быть не меньше 3-х символов.");
+
+const validateAndGetErrorMassage = (scheme, value) => {
+	let errorMassage = null;
+
+	try {
+		scheme.validateSync(value);
+	} catch ({ errors }) {
+		errorMassage = errors[0];
+	}
+
+	return errorMassage;
+};
 
 export const App = () => {
 	const defaultValue = "";
@@ -10,39 +55,38 @@ export const App = () => {
 	const [confirmPassword, setConfirmPassword] = useState("");
 	const [confirmPasswordError, setConfirmPasswordError] = useState(null);
 
+	const submitButtonRef = useRef(null);
+
 	const onEmailChange = ({ target }) => {
 		setEmail(target.value);
 
-		let error = null;
+		const error = validateAndGetErrorMassage(
+			emailChangeScheme,
+			target.value
+		);
 
-		if (!/^[\w_@.]*$/.test(target.value)) {
-			error =
-				"Неверный E-mail. Допустимые символы - буквы, цифры, нижнее подчеркивание, @ и точка.";
-		} else if (target.value.length > 20) {
-			error = "Неверный E-mail. Должно быть не более 20 символов.";
-		}
 		setEmailError(error);
+
+		if (target.value.length === 20) {
+			submitButtonRef.current.focus();
+		}
 	};
 
 	const onPasswordChange = ({ target }) => {
 		setPassword(target.value);
 
-		let error = null;
-		if (!/^[\w_]*$/.test(target.value)) {
-			error =
-				"Неверный пароль. Доступные символы - буквы, цифры и нижнее подчеркивание.";
-		} else if (target.value.length > 15) {
-			error = "Неверный пароль. Должно быть не более 15 символов.";
-		}
+		const error = validateAndGetErrorMassage(
+			passwordChangeScheme,
+			target.value
+		);
+
 		setPasswordError(error);
 	};
 
 	const onPasswordBlur = () => {
-		if (password.length < 3) {
-			setPasswordError(
-				"Неверный пароль. Пароль должен быть не меньше 3-х символов."
-			);
-		}
+		const error = validateAndGetErrorMassage(passwordBlurScheme, password);
+
+		setPasswordError(error);
 	};
 
 	const onPasswordFocus = () => {
@@ -142,6 +186,7 @@ export const App = () => {
 				/>
 
 				<button
+					ref={submitButtonRef}
 					type="submit"
 					className={styles.formButton}
 					disabled={
