@@ -16,12 +16,12 @@ const fieldsScheme = yup.object().shape({
 		.required("Email обязателен для заполнения"),
 	password: yup
 		.string()
-		.min(3, "Неверный пароль. Пароль должен быть не меньше 3-х символов.")
+		.min(3, "Неверный пароль. Пароль должен быть не менее 3 символов.")
 		.max(15, "Неверный пароль. Должно быть не более 15 символов.")
 		.required("Пароль обязателен для заполнения"),
 	confirmPassword: yup
 		.string()
-		.min(3, "Неверный пароль. Пароль должен быть не меньше 3-х символов.")
+		.min(3, "Неверный пароль. Пароль должен быть не менее 3 символов.")
 		.max(15, "Неверный пароль. Должно быть не более 15 символов.")
 		.oneOf([yup.ref("password"), null], "Пароли не совпадают")
 		.required("Подтверждение пароля обязателно для заполнения"),
@@ -34,7 +34,6 @@ export const App = () => {
 		register,
 		handleSubmit,
 		formState: { errors, isValid },
-		setFocus,
 	} = useForm({
 		defaultValues: {
 			email: "",
@@ -42,20 +41,14 @@ export const App = () => {
 			confirmPassword: "",
 		},
 		resolver: yupResolver(fieldsScheme),
-		mode: "onBlur",
 	});
 
 	const emailError = errors.email?.message;
-
 	const passwordError = errors.password?.message;
-
 	const confirmPasswordError = errors.confirmPassword?.message;
 
 	const onSubmit = (formData) => {
-		if (isValid) {
-			registerButtonElement.current.focus();
-		}
-
+		registerButtonElement.current.focus();
 		console.log(formData);
 	};
 
@@ -72,7 +65,6 @@ export const App = () => {
 					name="email"
 					placeholder="Введите E-mail"
 					{...register("email")}
-					onFocus={() => setFocus("email")}
 				/>
 
 				{passwordError && (
@@ -84,7 +76,6 @@ export const App = () => {
 					name="password"
 					placeholder="Придумайте пароль"
 					{...register("password")}
-					onFocus={() => setFocus("password")}
 				/>
 
 				{confirmPasswordError && (
@@ -98,7 +89,6 @@ export const App = () => {
 					name="confirmPassword"
 					placeholder="Повторите пароль"
 					{...register("confirmPassword")}
-					onFocus={() => setFocus("confirmPassword")}
 				/>
 
 				<button
