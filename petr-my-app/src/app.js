@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { useEffect } from "react";
+import { useRef } from "react";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import styles from "./app.module.css";
@@ -28,6 +28,8 @@ const fieldsScheme = yup.object().shape({
 });
 
 export const App = () => {
+	const registerButtonElement = useRef(null);
+
 	const {
 		register,
 		handleSubmit,
@@ -43,12 +45,6 @@ export const App = () => {
 		mode: "onBlur",
 	});
 
-	useEffect(() => {
-		if (isValid) {
-			document.getElementById("registerBtn").focus();
-		}
-	}, [isValid]);
-
 	const emailError = errors.email?.message;
 
 	const passwordError = errors.password?.message;
@@ -56,6 +52,10 @@ export const App = () => {
 	const confirmPasswordError = errors.confirmPassword?.message;
 
 	const onSubmit = (formData) => {
+		if (isValid) {
+			registerButtonElement.current.focus();
+		}
+
 		console.log(formData);
 	};
 
@@ -102,9 +102,9 @@ export const App = () => {
 				/>
 
 				<button
+					ref={registerButtonElement}
 					type="submit"
 					className={styles.formButton}
-					id="registerBtn"
 					disabled={!isValid}
 				>
 					Зарегистрироваться
