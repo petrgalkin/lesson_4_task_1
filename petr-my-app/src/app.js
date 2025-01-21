@@ -3,11 +3,11 @@ import styles from "./app.module.css";
 
 export const App = () => {
 	const defaultValue = "";
-	const [email, setEmail] = useState("");
+	const [email, setEmail] = useState(defaultValue);
 	const [emailError, setEmailError] = useState(null);
-	const [password, setPassword] = useState("");
+	const [password, setPassword] = useState(defaultValue);
 	const [passwordError, setPasswordError] = useState(null);
-	const [confirmPassword, setConfirmPassword] = useState("");
+	const [confirmPassword, setConfirmPassword] = useState(defaultValue);
 	const [confirmPasswordError, setConfirmPasswordError] = useState(null);
 
 	const submitButtonRef = useRef(null);
@@ -47,14 +47,6 @@ export const App = () => {
 		}
 	};
 
-	const onPasswordFocus = () => {
-		if (password === confirmPassword) {
-			setConfirmPasswordError(null);
-		} else {
-			setConfirmPasswordError("Пароли не совпадают.");
-		}
-	};
-
 	const onConfirmPasswordChange = ({ target }) => {
 		setConfirmPassword(target.value);
 
@@ -75,6 +67,7 @@ export const App = () => {
 			);
 		}
 		if (password !== confirmPassword) {
+			setPasswordError("Пароли не совпадают.");
 			setConfirmPasswordError("Пароли не совпадают.");
 		} else {
 			submitButtonRef.current.focus();
@@ -83,6 +76,7 @@ export const App = () => {
 
 	const onSubmit = (event) => {
 		event.preventDefault();
+
 		console.log(
 			"E-mail:",
 			email,
@@ -94,13 +88,6 @@ export const App = () => {
 		setEmail(defaultValue);
 		setPassword(defaultValue);
 		setConfirmPassword(defaultValue);
-	};
-
-	const onFocusSubmit = () => {
-		if (password !== confirmPassword) {
-			setPasswordError("Пароли не совпадают.");
-			setConfirmPasswordError("Пароли не совпадают.");
-		}
 	};
 
 	return (
@@ -129,7 +116,6 @@ export const App = () => {
 					value={password}
 					onChange={onPasswordChange}
 					onBlur={onPasswordBlur}
-					onFocus={onPasswordFocus}
 				/>
 				{confirmPasswordError && (
 					<div className={styles.errorLabel}>
@@ -151,11 +137,13 @@ export const App = () => {
 					className={styles.formButton}
 					disabled={
 						email === "" ||
+						password === "" ||
+						confirmPassword === "" ||
 						emailError !== null ||
 						passwordError !== null ||
-						confirmPasswordError !== null
+						confirmPasswordError !== null ||
+						password !== confirmPassword
 					}
-					onFocus={onFocusSubmit}
 				>
 					Зарегистрироваться
 				</button>
